@@ -68,7 +68,7 @@ async function rebuildAllRules(sites) {
     id: i + 1,
     priority: 1,
     condition: {
-      urlFilter: `||${domain}`,
+      urlFilter: `||${domain}/`,
       resourceTypes: ["main_frame", "sub_frame"]
     },
     action: {
