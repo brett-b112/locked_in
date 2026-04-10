@@ -51,6 +51,8 @@ function isValidHostname(value) {
   }
 }
 
+// Call this from the service worker DevTools console to inspect active rules:
+// chrome.declarativeNetRequest.getDynamicRules(r => console.log(JSON.stringify(r, null, 2)))
 async function rebuildAllRules(sites) {
   // Re-validate all entries from storage before building rules (#7: no blind trust of stored values)
   const validSites = sites.filter(isValidHostname);
@@ -81,4 +83,6 @@ async function rebuildAllRules(sites) {
     removeRuleIds: removeIds,
     addRules
   });
+
+  console.log(`[locked-in] rules rebuilt: ${addRules.length} active, ${removeIds.length} removed`, addRules.map(r => r.condition.urlFilter));
 }
