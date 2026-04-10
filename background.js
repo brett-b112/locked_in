@@ -58,13 +58,15 @@ async function rebuildAllRules(sites) {
   const existing = await chrome.declarativeNetRequest.getDynamicRules();
   const removeIds = existing.map(r => r.id);
 
-  // Use requestDomains instead of urlFilter to match exact domain + subdomains only,
-  // without false-positive suffix matches (e.g. ||reddit.com would also match noreddit.com)
+  // urlFilter "||domain.com" anchors to the domain boundary — it will match
+  // domain.com and subdomains like www.domain.com but NOT noreddit.com.
+  // requestDomains cannot be used alone with redirect actions (Chrome requires
+  // a urlFilter or regexFilter when action type is redirect).
   const addRules = validSites.map((domain, i) => ({
     id: i + 1,
     priority: 1,
     condition: {
-      requestDomains: [domain],
+      urlFilter: `||${domain}`,
       resourceTypes: ["main_frame", "sub_frame"]
     },
     action: {
