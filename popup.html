@@ -25,6 +25,19 @@
   </form>
   <p class="input-error" id="input-error"></p>
 
+  <div class="pomodoro-section">
+    <div class="pomodoro-display">
+      <span class="pomodoro-time" id="pomodoro-time">--:--</span>
+      <span class="pomodoro-label">🍅 Pomodoro</span>
+    </div>
+    <div class="pomodoro-presets">
+      <button class="btn-preset" data-minutes="25">25m</button>
+      <button class="btn-preset" data-minutes="5">5m</button>
+      <button class="btn-preset" data-minutes="30">30m</button>
+      <button class="btn-stop" id="btn-stop">Stop</button>
+    </div>
+  </div>
+
   <div class="list-header">Blocked Sites</div>
   <ul class="site-list" id="site-list"></ul>
   <p class="empty-state" id="empty-state">No sites blocked yet.</p>

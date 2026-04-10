@@ -12,6 +12,46 @@ const DEFAULT_BLOCKED_SITES = [
 ];
 
 // All listeners must be registered synchronously at the top level (MV3 requirement)
+
+// --- Pomodoro Timer ---
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name !== "pomodoro") return;
+  chrome.storage.local.set({ timerState: { status: "idle", endTime: null, durationMs: null } });
+  chrome.action.setBadgeText({ text: "" });
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "POMODORO_START") startPomodoro(message.durationMs);
+  if (message.type === "POMODORO_STOP") stopPomodoro();
+  return false;
+});
+
+async function startPomodoro(durationMs) {
+  const endTime = Date.now() + durationMs;
+  await chrome.alarms.clear("pomodoro");
+  await chrome.alarms.create("pomodoro", { when: endTime });
+  await chrome.storage.local.set({ timerState: { status: "running", endTime, durationMs } });
+  updateBadge(endTime);
+}
+
+async function stopPomodoro() {
+  await chrome.alarms.clear("pomodoro");
+  await chrome.storage.local.set({ timerState: { status: "idle", endTime: null, durationMs: null } });
+  chrome.action.setBadgeText({ text: "" });
+}
+
+function updateBadge(endTime) {
+  const remainingMs = endTime - Date.now();
+  if (remainingMs <= 0) {
+    chrome.action.setBadgeText({ text: "" });
+    return;
+  }
+  const mins = Math.max(1, Math.ceil(remainingMs / 60000));
+  chrome.action.setBadgeText({ text: String(mins) });
+  chrome.action.setBadgeBackgroundColor({ color: "#cc0000" });
+}
+// --- End Pomodoro Timer ---
+
 chrome.runtime.onInstalled.addListener((...args) =>
   handleInstall(...args).catch(err => console.error("[locked-in] install failed:", err))
 );
