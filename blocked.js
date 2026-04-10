@@ -8,6 +8,7 @@ document.getElementById("btn-back").addEventListener("click", () => {
   if (history.length > 1) {
     history.back();
   } else {
-    window.location.href = "chrome://newtab";
+    // chrome://newtab is not navigable from extension pages; close the tab instead
+    window.close();
   }
 });

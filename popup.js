@@ -23,9 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    await saveBlockedSites([...current, hostname]);
-    input.value = "";
-    renderList(await getBlockedSites());
+    try {
+      await saveBlockedSites([...current, hostname]);
+      input.value = "";
+      renderList(await getBlockedSites());
+    } catch {
+      errorEl.textContent = "Failed to save. Storage quota may be exceeded.";
+    }
   });
 
   // Clear error on input change
@@ -88,9 +92,13 @@ function renderList(sites) {
     removeBtn.textContent = "✕";
     removeBtn.title = `Unblock ${site}`;
     removeBtn.addEventListener("click", async () => {
-      const updated = (await getBlockedSites()).filter(s => s !== site);
-      await saveBlockedSites(updated);
-      renderList(updated);
+      try {
+        const updated = (await getBlockedSites()).filter(s => s !== site);
+        await saveBlockedSites(updated);
+        renderList(await getBlockedSites());
+      } catch {
+        // Storage write failed; list unchanged
+      }
     });
 
     li.appendChild(nameSpan);
